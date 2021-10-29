@@ -1,0 +1,35 @@
+name: check-sum-binaries
+
+on: push
+
+jobs:
+  test-on-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: check-on-ubuntu
+        shell: bash
+        run: scripts/checks.sh
+
+  test-on-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: check-on-windows
+        # We need to specify bash as a shell when a job is running on windows or macos runner
+        shell: bash
+        run: scripts/checks.sh
+
+  test-on-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Get All Git Tags
+        run: git fetch --force --prune --unshallow --tags
+      - name: check-on-macos
+        # We need to specify bash as a shell when a job is running on windows or macos runner
+        shell: bash
+        run: scripts/checks.sh
