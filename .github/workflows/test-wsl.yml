@@ -19,3 +19,4 @@ jobs:
         shell: bash
         run: |
           echo "System Domain: $AKS_DOMAIN"
+          ./scripts/setup-chart-museum.sh
