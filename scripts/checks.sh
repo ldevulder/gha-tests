@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#set -e
+set -e
 
 echo "List found '*sum' binaries:" 
 find /bin /sbin /usr/bin /usr/sbin -name '*sum'

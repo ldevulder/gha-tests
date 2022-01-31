@@ -1,0 +1,21 @@
+name: test-wsl
+
+on: push
+
+jobs:
+  test-on-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: check-on-windows
+        # We need to specify bash as a shell when a job is running on windows or macos runner
+        shell: bash
+        run: scripts/checks.sh
+      - name: Add letsencrypt-staging CA
+        env:
+          AKS_DOMAIN: test.domain.com
+        # We need to specify bash as a shell when a job is running on windows or macos runner
+        shell: bash
+        run: |
+          echo "System Domain: $AKS_DOMAIN"
