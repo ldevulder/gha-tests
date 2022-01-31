@@ -8,11 +8,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: check-on-windows
-        # We need to specify bash as a shell when a job is running on windows or macos runner
-        shell: bash
-        run: scripts/checks.sh
-      - name: Add letsencrypt-staging CA
+#     - name: check-on-windows
+#       # We need to specify bash as a shell when a job is running on windows or macos runner
+#       shell: bash
+#       run: scripts/checks.sh
+      - name: Test bash script run on Windows
         env:
           AKS_DOMAIN: test.domain.com
         # We need to specify bash as a shell when a job is running on windows or macos runner
