@@ -8,10 +8,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-#     - name: check-on-windows
-#       # We need to specify bash as a shell when a job is running on windows or macos runner
-#       shell: bash
-#       run: scripts/checks.sh
       - name: Test bash script run on Windows
         env:
           AKS_DOMAIN: test.domain.com
@@ -19,4 +15,4 @@ jobs:
         shell: bash
         run: |
           echo "System Domain: $AKS_DOMAIN"
-          ./scripts/setup-chart-museum.sh
+          make setup_chart_museum
