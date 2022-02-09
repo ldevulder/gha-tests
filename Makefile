@@ -1,2 +1,2 @@
 setup_chart_museum:
-	@./scripts/setup-chart-museum.sh 
+	@./scripts/setup-chart-museum.sh
