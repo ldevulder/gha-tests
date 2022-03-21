@@ -1,9 +1,10 @@
-container:
-  image: node:latest
+task:
+  name: E2E / Bootstrapping nodes with MachineRegistration
+  container:
+    image: opensuse/leap:latest
 
-check_task:
-  node_modules_cache:
-    folder: node_modules
-    fingerprint_script: cat yarn.lock
-    populate_script: yarn install
-  test_script: yarn test
+  install_deps:
+    - zypper -n in -l qemu-kvm libvirt virt-install sudo curl helm git-core tar make
+
+  check_kvm:
+    - ls -l /dev/kvm
