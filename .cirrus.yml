@@ -1,5 +1,6 @@
 task:
   name: E2E / Bootstrapping nodes with MachineRegistration
+  alias: install_rancher_test
   container:
     image: opensuse/leap:latest
     kvm: true
