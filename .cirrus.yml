@@ -5,5 +5,5 @@ task:
     kvm: true
     cpu: 4
     memory: 8G
-  check_kvm: ls -l /dev/kvm
-  install_deps: zypper -n in -l qemu-kvm libvirt virt-install sudo curl helm git-core tar make
+  check_kvm_script: ls -l /dev/kvm
+  install_deps_script: zypper -n in -l qemu-kvm libvirt virt-install sudo curl helm git-core tar make
