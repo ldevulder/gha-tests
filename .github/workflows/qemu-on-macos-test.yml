@@ -1,0 +1,27 @@
+name: qemu-on-macos-test
+
+on: workflow_dispatch
+
+jobs:
+  qemu-on-macos-test:
+    runs-on: macos-latest
+    steps:
+      - name: Install deps
+        run: |
+          brew install qemu libvirt
+          brew services start libvirt
+      - name: Check Qemu installation
+        run: |
+          qemu-system-x86_64 --version
+#     - name: Check Docker installation
+#       run: |
+#         docker version
+#         docker run --rm hello-world
+#     - name: Check KVM state on MacOS privileged container
+#       run: |
+#         docker run --privileged --rm ubuntu:latest ls -l /dev/kvm
+      - name: Cleanup runner
+        if: ${{ always() }}
+        run: |
+          brew services stop libvirt
+          brew uninstall qemu libvirt
