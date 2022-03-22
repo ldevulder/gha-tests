@@ -18,12 +18,3 @@ jobs:
       - name: Check KVM state on privileged container
         run: |
           ls -l /dev/kvm
-  privileged-container-on-macos:
-    runs-on: macos-latest
-    container:
-      image: ubuntu:latest
-      options: --privileged
-    steps:
-      - name: Check KVM state on MacOS privileged container
-        run: |
-          ls -l /dev/kvm

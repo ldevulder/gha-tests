@@ -1,0 +1,20 @@
+name: kvm-on-macos-test
+
+on: workflow_dispatch
+
+jobs:
+  privileged-container-on-macos:
+    runs-on: macos-latest
+#   container:
+#     image: ubuntu:latest
+#     options: --privileged
+    steps:
+      - name: Install Docker
+        uses: docker-practice/actions-setup-docker@master
+      - name: Check Docker installation
+        run: |
+          docker version
+          docker run --rm hello-world
+      - name: Check KVM state on MacOS privileged container
+        run: |
+          docker run --privileged --rm ubuntu:latest ls -l /dev/kvm
