@@ -1,0 +1,29 @@
+name: kvm-test
+
+on: workflow_dispatch
+
+jobs:
+  non-privileged-container:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check KVM state on non-privileged container
+        run: |
+          ls -l /dev/kvm
+  privileged-container:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:latest
+      options: --privileged
+    steps:
+      - name: Check KVM state on privileged container
+        run: |
+          ls -l /dev/kvm
+  privileged-container-on-macos:
+    runs-on: macos-latest
+    container:
+      image: ubuntu:latest
+      options: --privileged
+    steps:
+      - name: Check KVM state on MacOS privileged container
+        run: |
+          ls -l /dev/kvm
