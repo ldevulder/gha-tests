@@ -13,6 +13,21 @@ jobs:
       - name: Check Qemu installation
         run: |
           qemu-system-x86_64 --version
+      - name: Boot VM
+        run: |
+          qemu-img create -f qcow2 test-vm.qcow2 20G
+          qemu-system-x86_64 \
+            -machine type=q35,accel=hvf \
+            -smp 2 \
+            -hda test-vm.qcow2 \
+            -m 2G \
+            -display none \
+            -nodefaults \
+            -no-user-config \
+            -no-hpet \
+            -no-shutdown \
+            -S \
+            -boot strict=on \
 #     - name: Check Docker installation
 #       run: |
 #         docker version
