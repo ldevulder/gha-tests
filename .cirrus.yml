@@ -24,12 +24,14 @@ task:
     folder: dist/artifacts
     fingerprint_key: dist
   container:
-    image: opensuse/leap:latest
+    #image: opensuse/leap:latest
+    image: rancher/k3s:latest
     kvm: true
     cpu: 4
     memory: 8G
-  check_kvm_script: ls -l /dev/kvm
-  check_cache_script: |
-    ls -l
-    ls -l dist/
-    ls -l dist/artifacts/
+  check_kvm_script:
+    - ls -l /dev/kvm
+  check_cache_script:
+    - ls -l dist/artifacts/
+  check_k3s_script:
+    - kubectl get pod -A
