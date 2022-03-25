@@ -1,36 +1,53 @@
-docker_builder:
-  name: Build images (container/iso/qcow2/etc.)
-  alias: build
-  build_script: |
-    mkdir -p dist/artifacts
-    echo "Test01!" > dist/artifacts/file01
-    echo "Test02!" > dist/artifacts/file02
-  clean_script: |
-    # Remove uneeded files in dist/artifacts to reduce caching size
-    rm -f dist/artifacts/*.qcow.gz dist/artifacts/*.box
-  check_script: |
-    ls -l dist/
-    ls -l dist/artifacts/
-  dist_cache:
-    folder: dist/artifacts
-    fingerprint_key: dist
-    reupload_on_changes: true
-
+#docker_builder:
+#  name: Build images (container/iso/qcow2/etc.)
+#  alias: build
+#  build_script: |
+#    mkdir -p dist/artifacts
+#    echo "Test01!" > dist/artifacts/file01
+#    echo "Test02!" > dist/artifacts/file02
+#  clean_script: |
+#    # Remove uneeded files in dist/artifacts to reduce caching size
+#    rm -f dist/artifacts/*.qcow.gz dist/artifacts/*.box
+#  check_script: |
+#    ls -l dist/
+#    ls -l dist/artifacts/
+#  dist_cache:
+#    folder: dist/artifacts
+#    fingerprint_key: dist
+#    reupload_on_changes: true
+#
+#task:
+#  name: E2E / Bootstrapping nodes with MachineRegistration
+#  alias: install_rancher_test
+#  depends_on: build
+#  dist_cache:
+#    folder: dist/artifacts
+#    fingerprint_key: dist
+#  container:
+#    image: opensuse/leap:latest
+#    kvm: true
+#    cpu: 4
+#    memory: 8G
+#  check_kvm_script:
+#    - ls -l /dev/kvm
+#  check_cache_script:
+#    - ls -l dist/artifacts/
+#  check_ps_script:
+#    - ps -efww
+#
 task:
-  name: E2E / Bootstrapping nodes with MachineRegistration
-  alias: install_rancher_test
-  depends_on: build
-  dist_cache:
-    folder: dist/artifacts
-    fingerprint_key: dist
-  container:
-    image: opensuse/leap:latest
-    kvm: true
+  name: Compute Engine Instance Test
+  alias: compute_engine_instance_test
+  compute_engine_instance:
+    image_project: cirrus-images
+    image: family/docker-builder
+#   image: family/docker-kvm
+    platform: linux
     cpu: 4
-    memory: 8G
+    memory: 16G
+    nested_virtualization: true
   check_kvm_script:
     - ls -l /dev/kvm
-  check_cache_script:
-    - ls -l dist/artifacts/
-  check_ps_script:
-    - ps -efww
+  check_script: |
+    ps -efww
+    docker version
