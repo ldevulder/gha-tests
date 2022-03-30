@@ -40,8 +40,8 @@ task:
   alias: compute_engine_instance_test
   compute_engine_instance:
     image_project: cirrus-images
-    image: family/docker-builder
-#   image: family/docker-kvm
+    #image: family/docker-builder
+    image: family/docker-kvm
     platform: linux
     cpu: 4
     memory: 16G
