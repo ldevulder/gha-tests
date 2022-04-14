@@ -1,0 +1,54 @@
+name: golang-test
+
+on: workflow_dispatch
+
+jobs:
+  test-on-direct-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+            go-version: '~1.17'
+      - name: Check Go version
+        run: |
+          echo PATH=${PATH}
+          go version
+  test-on-ubuntu-container:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:latest
+    steps:
+      #- name: Install dependencies
+      #  run: zypper -n in -l curl git-core tar
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+            go-version: '~1.17'
+      - name: Check Go version
+        run: |
+          echo PATH=${PATH}
+          go version
+  test-on-opensuse-leap-container:
+    runs-on: ubuntu-latest
+    container:
+      image: opensuse/leap:latest
+      env:
+        PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    steps:
+      - name: Install dependencies
+        run: zypper -n in -l curl git-core tar
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+            go-version: '~1.17'
+      - name: Check Go version
+        run: |
+          echo PATH=${PATH}
+          go version
