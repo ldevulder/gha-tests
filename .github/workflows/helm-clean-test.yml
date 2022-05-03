@@ -1,0 +1,30 @@
+name: helm-clean-test
+
+on: workflow_dispatch
+
+jobs:
+  test-on-opensuse-leap-container:
+    runs-on: ubuntu-latest
+    container:
+      image: opensuse/leap:latest
+      env:
+        PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    steps:
+      - name: Install dependencies
+        run: zypper -n in -l curl helm git-core tar make
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+            go-version: '~1.17'
+      - name: Check Go version
+        run: |
+          echo PATH=${PATH}
+          go version
+      - name: E2E - Bootstrapping node with Rancher
+        run: |
+          # Clean Helm repo
+          REPO=$(helm repo list 2>/dev/null | awk '(NR>1) { print $1 }')
+          [[ -n "${REPO}" ]] && helm repo remove ${REPO}
+          echo "cd tests && make e2e-bootstraping-node-with-rancher"
