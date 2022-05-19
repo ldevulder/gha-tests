@@ -1,0 +1,14 @@
+name: github-vars
+
+on: workflow_dispatch
+
+jobs:
+  gh-vars-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check GH variables
+        run: |
+          echo "github.sha=${{ github.sha }}"
+          echo "GITHUB_SHA=${GITHUB_SHA}"
+          echo "github.api_url=${{ github.api_url }}"
+          echo "GITHUB_API_URL=${GITHUB_API_URL}"
