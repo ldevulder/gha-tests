@@ -1,14 +1,37 @@
-[![godoc](https://pkg.go.dev/badge/epinio/epinio)](https://pkg.go.dev/github.com/epinio/epinio/internal/api/v1)
-![CI](https://github.com/epinio/epinio/workflows/CI/badge.svg?event=schedule)
-![AKS-CI](https://github.com/epinio/epinio/actions/workflows/aks-basic.yml/badge.svg?event=schedule)
-![AKS-LETSENCRYPT-CI](https://github.com/epinio/epinio/actions/workflows/aks.yml/badge.svg?event=schedule)
-![EKS-CI](https://github.com/epinio/epinio/actions/workflows/eks.yml/badge.svg?event=schedule)
-![GKE-CI](https://github.com/epinio/epinio/actions/workflows/gke-basic.yml/badge.svg?event=schedule)
-![GKE-LETSENCRYPT-CI](https://github.com/epinio/epinio/actions/workflows/gke.yml/badge.svg?event=schedule)
-![RKE-CI](https://github.com/epinio/epinio/actions/workflows/rke.yml/badge.svg?event=schedule)
-![golangci-lint](https://github.com/epinio/epinio/actions/workflows/golangci-lint.yml/badge.svg?event=schedule)
-![UI-SCENARIO-1-CHROME](https://github.com/epinio/epinio-end-to-end-tests/actions/workflows/scenario_1_cypress_chrome.yml/badge.svg?event=schedule)
-![UI-SCENARIO-2-FIREFOX](https://github.com/epinio/epinio-end-to-end-tests/actions/workflows/scenario_2_cypress_firefox.yml/badge.svg?event=schedule)
-
 # gha-tests
 A way to quickly test GitHub Actions
+
+# End-To-End Elemental tests quick description
+
+## install_test.go (E2E - Install Rancher)
+**Install and configure Rancher and libvirt by:**
+- Installing K3s
+- Starting K3s
+- Waiting for K3s to be started
+- Installing CertManager
+- Installing Rancher
+- Installing Elemental Operator
+- Creating a new cluster
+- Adding MachineRegistration
+- Starting HTTP server for network installation
+- Starting libvirtd
+- Starting default network
+
+## bootstrap_test.go (E2E - Bootstrapping node)
+**Install node and add it in Rancher by:**
+- Checking if VM name is set
+- Configuring iPXE boot script for network installation
+- Creating and installing VM
+- Checking that the VM is available in Rancher
+- Adding server role to predefined cluster
+- Restarting the VM
+- Checking that the VM is added in the cluster
+- Checking VM ssh connection
+
+## upgrade_test.go (2E - Upgrading node)
+**Upgrade node by:**
+- Checking if VM name is set
+- Checking if upgrade type is set
+- Triggering Upgrade in Rancher with <upgradeType>
+- Checking VM upgrade
+- Cleaning upgrade orders
