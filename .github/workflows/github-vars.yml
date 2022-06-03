@@ -5,6 +5,9 @@ on: workflow_dispatch
 jobs:
   gh-vars-test:
     runs-on: ubuntu-latest
+    env:
+      GH_REPO: rancher/elemental
+      ARCH: amd64
     steps:
       - name: Check GH variables
         run: |
@@ -12,3 +15,12 @@ jobs:
           echo "GITHUB_SHA=${GITHUB_SHA}"
           echo "github.api_url=${{ github.api_url }}"
           echo "GITHUB_API_URL=${GITHUB_API_URL}"
+          echo "GITHUB_REPOSITORY=${GITHUB_REPOSITORY}"
+      - name: Download latest Rancher image(s)
+        run: |
+          set -x
+          # Download the latest *OFFICIAL* version available
+          #OS2_ISO=$(curl -s ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/latest \
+          OS2_ISO=$(curl -s ${GITHUB_API_URL}/repos/${GH_REPO}/releases/latest \
+                           | awk "/browser_download_url.*-${ARCH}.iso/ { gsub(\"\\\"\",\"\"); print \$2 }")
+          for I in \.iso \.ipxe \.squashfs -kernel -initrd; do URL=${OS2_ISO/\.iso/${I}}; curl -Ls -o ${URL##*/} ${URL}; done
