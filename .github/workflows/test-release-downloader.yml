@@ -1,0 +1,47 @@
+name: test-release-downloader
+
+on: workflow_dispatch
+
+jobs:
+  release-donwloader-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get latest released version
+        run: |
+          echo -n "Latest released version: "
+          echo ${{ github.event.release.tag_name }}
+      - name: Check *BEFORE* release-downloader
+        run: |
+          echo "** BEFORE **"
+          ls -l
+      - name: Download latest release
+        uses: robinraju/release-downloader@v1.3
+        with:
+          # The source repository path.
+          # Expected format {owner}/{repo}
+          # Default: ${{ github.repository }}
+          repository: "rancher/elemental"
+          # A flag to set the download target as latest release
+          # The default value is 'false'
+          latest: true
+          # The name of the file to download.
+          # Use this field only to specify filenames other than tarball or zipball, if any.
+          # Use '*' to download all assets
+          fileName: "*"
+      - name: Check *AFTER* release-downloader
+        run: |
+          echo "** AFTER **"
+          ls -l
+      - name: E2E - Backup current build
+        env:
+          ARCH: amd64
+        run: |
+          # Backup files from current build
+          mkdir -p backup && mv -f rancheros-*-${ARCH}* $_
+      - name: Check backup
+        run: |
+          echo "** CHECK BACKUP **"
+          ls -l
+          ls -l backup/
