@@ -16,6 +16,11 @@ jobs:
         run: |
           echo "** BEFORE **"
           ls -l
+      - name: Check repository variable
+        run: |
+          echo -n "github.repository="
+          echo ${{ github.repository }}
+          echo "GITHUB_REPOSITORY=${GITHUB_REPOSITORY}"
       - name: Download latest release
         uses: robinraju/release-downloader@v1.3
         with:
@@ -23,6 +28,7 @@ jobs:
           # Expected format {owner}/{repo}
           # Default: ${{ github.repository }}
           repository: "rancher/elemental"
+          ## repository: ${{ github.repository }}
           # A flag to set the download target as latest release
           # The default value is 'false'
           latest: true
