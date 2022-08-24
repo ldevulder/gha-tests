@@ -8,6 +8,8 @@ jobs:
     env:
       GH_REPO: rancher/elemental
       ARCH: amd64
+      K8S_VERSION: v1.23.9+k3s1
+      INSTALL_K3S_VERSION: ${K8S_VERSION}
     steps:
       - name: Check GH variables
         run: |
@@ -16,6 +18,11 @@ jobs:
           echo "github.api_url=${{ github.api_url }}"
           echo "GITHUB_API_URL=${GITHUB_API_URL}"
           echo "GITHUB_REPOSITORY=${GITHUB_REPOSITORY}"
+      - name: Check variables
+        run: |
+          echo ARCH=${{ env.ARCH }}
+          echo K8S_VERSION=${{ env.K8S_VERSION }}
+          echo INSTALL_K3S_VERSION=${INSTALL_K3S_VERSION}
       - name: Download latest Rancher image(s)
         run: |
           set -x
@@ -23,4 +30,4 @@ jobs:
           #OS2_ISO=$(curl -s ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/latest \
           OS2_ISO=$(curl -s ${GITHUB_API_URL}/repos/${GH_REPO}/releases/latest \
                            | awk "/browser_download_url.*-${ARCH}.iso/ { gsub(\"\\\"\",\"\"); print \$2 }")
-          for I in \.iso \.ipxe \.squashfs -kernel -initrd; do URL=${OS2_ISO/\.iso/${I}}; curl -Ls -o ${URL##*/} ${URL}; done
+          for I in \.iso \.ipxe \.squashfs -kernel -initrd; do URL=${OS2_ISO/\.iso/${I}}; echo curl -Ls -o ${URL##*/} ${URL}; done
