@@ -4,23 +4,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  gcp-login:
-    runs-on: ubuntu-latest
-    env:
-      RUNNER: elemental-e2e-ci-runner-x86-64-1
-      ZONE: us-central1-a
-    steps:
-      - name: Authenticate to GCP
-        uses: google-github-actions/auth@v0
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v0
-      - name: Stop instance
-        run: gcloud compute instances stop --zone ${{ env.ZONE }} ${{ env.RUNNER }}
-      - name: List instances status
-        run: gcloud compute instances list
-      - name: Start instance
-        run: gcloud compute instances start --zone ${{ env.ZONE }} ${{ env.RUNNER }}
-      - name: List instances status
-        run: gcloud compute instances list
+  login:
+    uses: ./.github/workflows/master-gcp.yml
+    with:
+      runner: elemental-e2e-ci-runner-x86-64-1
+      zone: us-central1-a
