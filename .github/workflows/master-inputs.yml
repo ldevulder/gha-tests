@@ -1,0 +1,19 @@
+name: (template) Inputs Test
+
+on:
+  workflow_call:
+    inputs:
+      node_number2:
+        description: Number of nodes (>3) to deploy on the provisioned cluster
+        required: false
+        type: number
+
+jobs:
+  input-test:
+    runs-on: ubuntu-latest
+    env:
+      NODE_NUMBER: ${{ inputs.node_number2 }}
+    steps:
+      - name: Test
+        run: |
+          echo "NODE_NUMBER=${NODE_NUMBER}"

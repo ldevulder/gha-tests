@@ -1,0 +1,15 @@
+name: Inputs Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      node_number:
+        description: Number of nodes (>3) to deploy on the provisioned cluster
+        required: false
+        type: number
+
+jobs:
+  test:
+    uses: ./.github/workflows/master-inputs.yml
+    with:
+      node_number2: ${{ inputs.node_number }}
