@@ -3,16 +3,16 @@ name: (template) Inputs Test
 on:
   workflow_call:
     inputs:
-      node_number2:
+      node_number:
         description: Number of nodes (>3) to deploy on the provisioned cluster
         required: false
-        type: number
+        type: string
 
 jobs:
   input-test:
     runs-on: ubuntu-latest
     env:
-      NODE_NUMBER: ${{ inputs.node_number2 }}
+      NODE_NUMBER: ${{ inputs.node_number }}
     steps:
       - name: Test
         run: |

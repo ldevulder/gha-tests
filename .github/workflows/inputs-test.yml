@@ -12,4 +12,4 @@ jobs:
   test:
     uses: ./.github/workflows/master-inputs.yml
     with:
-      node_number2: ${{ inputs.node_number }}
+      node_number: ${{ inputs.node_number }}
