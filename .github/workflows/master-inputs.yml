@@ -7,13 +7,25 @@ on:
         description: Number of nodes (>3) to deploy on the provisioned cluster
         required: false
         type: string
+      ca_type:
+        description: CA type to use (selfsigned or private)
+        default: selfsigned
+        type: string
 
 jobs:
   input-test:
     runs-on: ubuntu-latest
     env:
       NODE_NUMBER: ${{ inputs.node_number }}
+      CA_TYPE: ${{ inputs.ca_type }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Test
         run: |
           echo "NODE_NUMBER=${NODE_NUMBER}"
+          echo "CA_TYPE=${CA_TYPE}"
+          # Test Makefile
+          for ((I=4; I<=NODE_NUMBER; ++I)); do
+            VM_INDEX=${I} make test_var
+          done
