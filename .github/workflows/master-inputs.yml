@@ -5,7 +5,6 @@ on:
     inputs:
       node_number:
         description: Number of nodes (>3) to deploy on the provisioned cluster
-        required: false
         type: string
       ca_type:
         description: CA type to use (selfsigned or private)
@@ -16,12 +15,13 @@ jobs:
   input-test:
     runs-on: ubuntu-latest
     env:
-      NODE_NUMBER: ${{ inputs.node_number }}
       CA_TYPE: ${{ inputs.ca_type }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Test
+      - name: Bootstrap additional nodes (total of ${{ inputs.node_number }}) with current build (use iPXE)
+        env:
+          NODE_NUMBER: ${{ inputs.node_number }}
         run: |
           echo "NODE_NUMBER=${NODE_NUMBER}"
           echo "CA_TYPE=${CA_TYPE}"
@@ -29,3 +29,14 @@ jobs:
           for ((I=4; I<=NODE_NUMBER; ++I)); do
             VM_INDEX=${I} make test_var
           done
+      - name: Add summary
+        run: |
+          echo "### Quick summary" >> $GITHUB_STEP_SUMMARY
+          echo "Number of installed nodes: ${{ inputs.node_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "Certificate: ${{ env.CA_TYPE }}" >> $GITHUB_STEP_SUMMARY
+          if ${{ env.CA_TYPE == 'selfsigned' }}; then
+            echo "Not a real certificate!" >> $GITHUB_STEP_SUMMARY
+          fi
+          if ${{ env.CA_TYPE == 'private' }}; then
+            echo "Closer to a real certificate!" >> $GITHUB_STEP_SUMMARY
+          fi

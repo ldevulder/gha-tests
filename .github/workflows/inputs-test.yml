@@ -5,11 +5,16 @@ on:
     inputs:
       node_number:
         description: Number of nodes (>3) to deploy on the provisioned cluster
-        required: false
+        default: 5
         type: number
 
 jobs:
-  test:
+  test-01:
     uses: ./.github/workflows/master-inputs.yml
     with:
       node_number: ${{ inputs.node_number }}
+  test-02:
+    uses: ./.github/workflows/master-inputs.yml
+    with:
+      ca_type: private
+      node_number: 2
