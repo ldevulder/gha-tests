@@ -1,0 +1,22 @@
+name: UUID Test
+
+on:
+  workflow_dispatch
+
+jobs:
+  set-uuid:
+    runs-on: ubuntu-latest
+    outputs:
+      uuid: ${{ steps.uuid.outputs.value }}
+    steps:
+      - name: Generate UUID
+        id: uuid
+        run: echo "value=$(uuidgen)" >> ${GITHUB_OUTPUT}
+      - name: Check generated UUID
+        run: echo "UUID:" ${{ steps.uuid.outputs.value }}
+  test-uuid-in-another-job:
+    needs: set-uuid
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get UUID
+        run: echo "UUID:" ${{ needs.set-uuid.outputs.uuid }}
