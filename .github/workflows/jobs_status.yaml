@@ -1,0 +1,25 @@
+name: Jobs Status Test
+
+on:
+  workflow_dispatch
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test job1
+        #run: echo "Run job1"; exit 0
+        run: echo "Run job1"; exit 0
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test job2
+        run: echo "Run job2"; exit 0
+  job3:
+    if: ${{ always() && needs.job1.result == 'success' }}
+    needs: [job1, job2]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test job3
+        run: echo "Run job3"; exit 0
