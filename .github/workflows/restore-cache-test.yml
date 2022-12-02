@@ -29,3 +29,4 @@ jobs:
         run: |
           ls -l
           ls -l ./files-to-cache
+          cat ./files-to-cache/file.iso
