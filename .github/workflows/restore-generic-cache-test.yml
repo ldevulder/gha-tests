@@ -18,6 +18,7 @@ jobs:
           path: ./files-to-cache/*.iso
           key: iso-build-ci-${{ github.event.pull_request.head.sha || github.sha }}
           # Used alternate key if needed
+          # Not sur if it works well...
           restore-keys: |
             iso-build-ci-
       - name: Check cache
