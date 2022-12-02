@@ -24,7 +24,6 @@ jobs:
           restore-keys: |
             iso-build-ci-
       - name: Check cache
-        if: steps.cache-files.outputs.cache-hit == 'true'
         run: |
           ls -l
           ls -l files-to-cache
