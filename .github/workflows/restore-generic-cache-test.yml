@@ -1,0 +1,25 @@
+name: Restore Generic Cache Test
+
+on:
+  workflow_dispatch
+
+jobs:
+  restore-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Cache files
+        id: cache-files
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-files
+        with:
+          path: ./files-to-cache/*.iso
+          key: iso-build-ci-${{ github.event.pull_request.head.sha || github.sha }}
+          restore-keys: |
+            iso-build-ci-
+      - name: Check cache
+        run: |
+          ls -l
+          ls -l ./files-to-cache
