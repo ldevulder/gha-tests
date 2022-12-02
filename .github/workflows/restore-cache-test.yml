@@ -1,0 +1,31 @@
+name: Restore Cache Test
+
+on:
+  workflow_run:
+    workflows:
+      - save-cache-test
+    types:
+      - completed
+
+jobs:
+  restore-cache:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Cache files
+        id: cache-files
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-files
+        with:
+          path: ./files-to-cache/*.iso
+          key: iso-build-ci-${{ github.event.pull_request.head.sha || github.sha }}
+          restore-keys: |
+            iso-build-ci-
+      - name: Check cache
+        if: steps.cache-files.outputs.cache-hit == 'true'
+        run: |
+          ls -l
+          ls -l ./files-to-cache

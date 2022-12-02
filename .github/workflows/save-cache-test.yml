@@ -1,0 +1,29 @@
+name: save-cache-test
+
+on:
+  workflow_dispatch
+
+jobs:
+  save-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Create temp files
+        run: |
+          mkdir -p files-to-cache && cd files-to-cache
+          uuidgen > file.iso
+          for ((I=1; I<=10; ++I)); do
+            uuidgen > file-${I}
+          done
+      - name: Check generated files
+        run: |
+          ls -l
+          ls -l ./files-to-cache
+      - name: Cache files
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-files
+        with:
+          path: ./files-to-cache/*.iso
+          key: iso-build-ci-${{ github.event.pull_request.head.sha || github.sha }}
