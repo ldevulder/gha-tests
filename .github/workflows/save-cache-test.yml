@@ -19,12 +19,12 @@ jobs:
       - name: Check generated files
         run: |
           ls -l
-          ls -l ./files-to-cache
-          cat ./files-to-cache/file.iso
+          ls -l files-to-cache
+          cat files-to-cache/file.iso
       - name: Cache files
         uses: actions/cache@v3
         env:
           cache-name: cache-files
         with:
-          path: ./files-to-cache/*.iso
+          path: files-to-cache/*.iso
           key: iso-build-ci-${{ github.event.pull_request.head.sha || github.sha }}
