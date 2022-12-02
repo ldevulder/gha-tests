@@ -14,7 +14,7 @@ jobs:
         env:
           cache-name: cache-files
         with:
-          path: files-to-cache/*.iso
+          path: files-to-cache/*
           key: iso-build-ci-${{ github.event.pull_request.head.sha || github.sha }}
           # Used alternate key if needed
           # Not sur if it works well...
