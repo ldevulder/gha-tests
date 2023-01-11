@@ -32,14 +32,13 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v2
       - name: Install deps (${{ matrix.os }})
-        if: matrix.os == 'ubuntu-latest'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y mkisofs
-      - name: Install deps (${{ matrix.os }})
-        if: matrix.os == 'macos-latest'
-        run: |
-          brew install cdrtools
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            sudo apt-get update
+            sudo apt-get install -y mkisofs
+          elif [[ "${{ runner.os }}" == "macOS" ]]; then
+            brew install cdrtools
+          fi
       - name: Checkout code
         uses: actions/checkout@v3
         with:
