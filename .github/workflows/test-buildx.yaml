@@ -16,18 +16,15 @@ jobs:
             arch: "arm64"
     runs-on: ${{ matrix.os }}
     steps:
-#     - name: Install Docker on MacOS and start Colima
-#       if: runner.os == 'macOS'
-#       run: |
-#         brew install docker
-#         # Docker engine is no longer available because of licensing
-#         # Alternative Colima is part of the github macOS runner
-#         colima start
-#         # Ensure colima is configured for later user
-#         # echo "DOCKER_HOST=unix://$HOME/.colima/default/docker.sock" >> $GITHUB_ENV
-      - name: Install Docker
+      - name: Install Docker on MacOS and start Colima
         if: runner.os == 'macOS'
-        uses: docker-practice/actions-setup-docker@v1
+        run: |
+          brew install docker
+          # Docker engine is no longer available because of licensing
+          # Alternative Colima is part of the github macOS runner
+          colima start
+          # Ensure colima is configured for later user
+          # echo "DOCKER_HOST=unix://$HOME/.colima/default/docker.sock" >> $GITHUB_ENV
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v2
