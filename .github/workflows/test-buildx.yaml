@@ -16,6 +16,9 @@ jobs:
             arch: "arm64"
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Get runner OS name
+        run: |
+          echo "RUNNER OS: ${{ runner.os }}"
       - name: Install Docker on MacOS and start Colima
         if: runner.os == 'macOS'
         run: |
