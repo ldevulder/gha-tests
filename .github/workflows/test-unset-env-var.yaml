@@ -1,0 +1,25 @@
+name: Test to unset a GH ENV variable
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-env-var:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test to unset an ENV
+        env:
+          EMULATE_TPM: true
+          ISO_BOOT: true
+          OPERATOR_VERSION: "1.0"
+        run: |
+          echo -e "\nCheck ENV var *BEFORE* unset"
+          echo "EMULATE_TPM=${EMULATE_TPM}"
+          echo "ISO_BOOT=${ISO_BOOT}"
+
+          # If elemental-operator is a v1.0 we should disable EMULATE_TPM
+          [[ "${OPERATOR_VERSION}" == "1.0" ]] && unset EMULATE_TPM
+
+          echo -e "\nCheck ENV var *AFTER* unset"
+          echo "EMULATE_TPM=${EMULATE_TPM}"
+          echo "ISO_BOOT=${ISO_BOOT}"
