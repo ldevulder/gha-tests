@@ -2,6 +2,14 @@ name: Test to unset a GH ENV variable
 
 on:
   workflow_dispatch:
+    inputs:
+      iso_to_test:
+        description: ISO to test (default built one is empty)
+        type: string
+      test_type:
+        description: Type of test to run (cli or ui)
+        default: cli
+        type: string
 
 jobs:
   test-env-var:
@@ -23,3 +31,11 @@ jobs:
           echo -e "\nCheck ENV var *AFTER* unset"
           echo "EMULATE_TPM=${EMULATE_TPM}"
           echo "ISO_BOOT=${ISO_BOOT}"
+      - name: Upgrade node 1 (with osImage method) to latest build
+        if: inputs.test_type == 'cli' && !contains(inputs.iso_to_test, '/Stable:/')
+        env:
+          CONTAINER_IMAGE: quay.io/costoolkit/elemental-ci:latest
+          UPGRADE_TYPE: osImage
+          VM_INDEX: 1
+        run: |
+          echo "!! Upgrade is started !!"
