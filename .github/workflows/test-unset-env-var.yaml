@@ -10,6 +10,12 @@ on:
         description: Type of test to run (cli or ui)
         default: cli
         type: string
+      upgrade_image:
+        description: Image to use for the Elemental OS upgrade
+        type: string
+      upgrade_os_channel:
+        description: Channel to use for the Elemental OS upgrade
+        type: string
 
 jobs:
   test-env-var:
@@ -31,6 +37,22 @@ jobs:
           echo -e "\nCheck ENV var *AFTER* unset"
           echo "EMULATE_TPM=${EMULATE_TPM}"
           echo "ISO_BOOT=${ISO_BOOT}"
+      - name: Test to check inputs
+        env:
+          EMULATE_TPM: true
+        run: |
+          set -x
+          echo -e "\nCheck ENV var *BEFORE* unset"
+          echo "EMULATE_TPM=${EMULATE_TPM}"
+
+          if ${{ inputs.upgrade_image != '' }}      || \
+             ${{ inputs.upgrade_os_channel != '' }} || \
+             ${{ contains(inputs.iso_to_test, '/Stable:/') }}; then
+            unset EMULATE_TPM
+          fi
+
+          echo -e "\nCheck ENV var *AFTER* an eventual unset"
+          echo "EMULATE_TPM=${EMULATE_TPM}"
       - name: Upgrade node 1 (with osImage method) to latest build
         if: inputs.test_type == 'cli' && !contains(inputs.iso_to_test, '/Stable:/')
         env:
