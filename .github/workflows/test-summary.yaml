@@ -1,0 +1,18 @@
+name: Test Workflow Summary
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-summary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add summary
+        env:
+          TEST_DESC: Manual - Fully customizable UI IBS/OBS Deployment test with Standard K3s
+        run: |
+          # Add summary
+          echo "## General informations" >> ${GITHUB_STEP_SUMMARY}
+          echo -e "***${TEST_DESC}***\n" >> ${GITHUB_STEP_SUMMARY}
+          echo "Type of certificate for Rancher Manager: private" >> ${GITHUB_STEP_SUMMARY}
+          echo "Type of cluster deployed: ${CLUSTER_TYPE:-normal}" >> ${GITHUB_STEP_SUMMARY}
