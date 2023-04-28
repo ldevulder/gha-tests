@@ -3,6 +3,10 @@ name: Inputs Test
 on:
   workflow_dispatch:
     inputs:
+      destroy_runner:
+        description: Destroy the auto-generated self-hosted runner
+        default: true
+        type: boolean
       node_number:
         description: Number of nodes (>3) to deploy on the provisioned cluster
         default: 5
@@ -25,3 +29,4 @@ jobs:
       ca_type: private
       node_number: 2
       runner_template: ${{ inputs.runner_template || 'elemental-e2e-ci-runner-spot-x86-64-template-n2-standard-16-v2' }}
+      destroy_runner: ${{ inputs.destroy_runner || true }}

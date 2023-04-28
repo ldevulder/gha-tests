@@ -3,6 +3,10 @@ name: (template) Inputs Test
 on:
   workflow_call:
     inputs:
+      destroy_runner:
+        description: Destroy the auto-generated self-hosted runner
+        default: true
+        type: boolean
       node_number:
         description: Number of nodes (>3) to deploy on the provisioned cluster
         type: string
@@ -48,3 +52,6 @@ jobs:
         run: |
           echo "Date: $(date)"
           echo "Runner template: ${{ inputs.runner_template }}"
+      - name: Test destroy_runner
+        run: |
+          echo "destroy_runner: ${{ inputs.destroy_runner }}"
