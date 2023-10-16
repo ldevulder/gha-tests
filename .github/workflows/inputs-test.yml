@@ -29,4 +29,4 @@ jobs:
       ca_type: private
       node_number: 2
       runner_template: ${{ inputs.runner_template || 'elemental-e2e-ci-runner-spot-x86-64-template-n2-standard-16-v2' }}
-      destroy_runner: ${{ inputs.destroy_runner || true }}
+      destroy_runner: ${{ github.event_name == 'schedule' && true || inputs.destroy_runner }}
