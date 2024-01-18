@@ -55,3 +55,6 @@ jobs:
       - name: Test destroy_runner
         run: |
           echo "destroy_runner: ${{ inputs.destroy_runner }}"
+      - name: Check GITHUB_WORKFLOW value
+        run: |
+          echo "GITHUB_WORKFLOW: ${GITHUB_WORKFLOW}"
