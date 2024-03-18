@@ -1,6 +1,7 @@
 name: Inputs Test
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       destroy_runner:
@@ -20,9 +21,14 @@ env:
   DEFAULT_RUNNER_TEMPLATE: elemental-e2e-ci-runner-spot-x86-64-template-n2-standard-16-v2
 jobs:
   test-01:
+    strategy:
+      matrix:
+        ca_type: [ "selfsigned" ,"private" ]
+        node_number: [ 1, 2, 3, 4 ]
     uses: ./.github/workflows/master-inputs.yml
     with:
-      node_number: ${{ inputs.node_number }}
+      ca_type: ${{ matrix.ca_type }}
+      node_number: ${{ matrix.node_number }}
   test-02:
     uses: ./.github/workflows/master-inputs.yml
     with:
