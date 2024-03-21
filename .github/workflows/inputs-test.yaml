@@ -25,12 +25,12 @@ jobs:
       matrix:
         ca_type: [ "selfsigned" ,"private" ]
         node_number: [ 1, 2, 3, 4 ]
-    uses: ./.github/workflows/master-inputs.yml
+    uses: ./.github/workflows/master-inputs.yaml
     with:
       ca_type: ${{ matrix.ca_type }}
       node_number: ${{ matrix.node_number }}
   test-02:
-    uses: ./.github/workflows/master-inputs.yml
+    uses: ./.github/workflows/master-inputs.yaml
     with:
       ca_type: private
       node_number: 2

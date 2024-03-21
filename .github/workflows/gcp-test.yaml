@@ -5,7 +5,7 @@ on:
 
 jobs:
   login:
-    uses: ./.github/workflows/master-gcp.yml
+    uses: ./.github/workflows/master-gcp.yaml
     secrets:
       credentials: ${{ secrets.GCP_CREDENTIALS }}
     with:
