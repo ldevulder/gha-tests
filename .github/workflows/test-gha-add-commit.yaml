@@ -28,19 +28,12 @@ jobs:
           # Compare checksum and set generate value if needed
           [[ "${NEW_CHK}" != "${OLD_CHK}" ]] && echo "generate=needed" >> ${GITHUB_OUTPUT} || true
 
-#     - uses: EndBug/add-and-commit@v9
-#       if: steps.readme_generator.outputs.generate == 'needed'
-#       with:
-#         default_author: github_actions
-#         message: 'ci: update tests/README.md file'
-#         add: 'tests/README.md'
-
       - name: Push modified file
         if: steps.readme_generator.outputs.generate == 'needed'
         env:
-          CI_COMMIT_MESSAGE: "ci: update tests/README.md file"
           CI_COMMIT_AUTHOR: "github-actions"
-          CI_COMMIT_EMAIL: "${{ env.CI_COMMIT_AUTHOR }}@users.noreply.github.com"
+          CI_COMMIT_EMAIL: "github-actions@users.noreply.github.com"
+          CI_COMMIT_MESSAGE: "ci: update tests/README.md file"
         run: |
           git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
           git config --global user.email "${{ env.CI_COMMIT_EMAIL }}"
