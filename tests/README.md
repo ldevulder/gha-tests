@@ -1,5 +1,3 @@
-# FORCE UPDATE!
-
 # Tests description for cypress/e2e/unit_tests
 
 ## `upgrade.spec.ts`
