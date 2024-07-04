@@ -26,7 +26,7 @@ jobs:
           NEW_CHK=$(sha512sum ${FILE} 2>/dev/null) || true
 
           # Compare checksum and set generate value if needed
-          [[ "${NEW_CHK}" != "${OLD_CHK}" ]] && echo "generate=needed" >> ${GITHUB_OUTPUT}
+          [[ "${NEW_CHK}" != "${OLD_CHK}" ]] && echo "generate=needed" >> ${GITHUB_OUTPUT} || true
 
 #     - uses: EndBug/add-and-commit@v9
 #       if: steps.readme_generator.outputs.generate == 'needed'
@@ -40,9 +40,10 @@ jobs:
         env:
           CI_COMMIT_MESSAGE: "ci: update tests/README.md file"
           CI_COMMIT_AUTHOR: "github-actions"
+          CI_COMMIT_EMAIL: "${{ env.CI_COMMIT_AUTHOR }}@users.noreply.github.com"
         run: |
           git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
-          git config --global user.email "${{ env.CI_COMMIT_AUTHOR }}@users.noreply.github.com"
+          git config --global user.email "${{ env.CI_COMMIT_EMAIL }}"
           git add tests/README.md
           git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
           git push
