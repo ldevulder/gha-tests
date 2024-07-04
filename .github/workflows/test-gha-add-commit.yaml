@@ -34,9 +34,10 @@ jobs:
           CI_COMMIT_AUTHOR: "github-actions"
           CI_COMMIT_EMAIL: "github-actions@users.noreply.github.com"
           CI_COMMIT_MESSAGE: "ci: update tests/README.md file"
+          CI_COMMIT_FILE: "tests/README.md"
         run: |
           git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
           git config --global user.email "${{ env.CI_COMMIT_EMAIL }}"
-          git add tests/README.md
+          git add ${{ env.CI_COMMIT_FILE }}
           git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
           git push
