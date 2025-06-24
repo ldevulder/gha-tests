@@ -1,7 +1,7 @@
 name: Inputs Test
 
 on:
-  push:
+# push:
   workflow_dispatch:
     inputs:
       destroy_runner:

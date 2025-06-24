@@ -1,7 +1,7 @@
 name: test-matrix
 
 on:
-  push:
+# push:
   workflow_dispatch:
     inputs:
       ca_type:
