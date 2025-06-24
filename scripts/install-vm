@@ -1,0 +1,133 @@
+#!/bin/bash
+
+set -evx
+
+# Error function
+function error() {
+  echo -e "$@" >&2
+  exit 1
+}
+
+# Variable(s) and default values
+ARCH=$(uname -m)
+EMULATED_TPM="none"
+#FW_CODE=/usr/share/qemu/ovmf-${ARCH}-smm-suse-code.bin
+FW_CODE=$(realpath assets/ovmf-${ARCH}-smm-suse-code.bin)
+FW_VARS=$(realpath assets/ovmf-template-vars.fd)
+HDD_SIZE=30
+MAC=$2
+VM_NAME=$1
+
+# Configure hugepages if needed
+NR_HUGEPAGES=$(</proc/sys/vm/nr_hugepages)
+if (( NR_HUGEPAGES == 0 && USE_HUGEPAGES != 0 )); then
+  # Not configured, do it now!
+  MEMTOTAL_KB=$(awk '/^MemTotal:/ { print $2 }' /proc/meminfo)
+
+  # Number of hugepages (with hugepagesize set to 2MB)
+  # NOTE: keep 24GB by default for the hypervisor/Rancher Manager Server
+  # And this value can be modified with HOST_MEMORY_RESERVED variable
+  (( VALUE = (MEMTOTAL_KB - ${HOST_MEMORY_RESERVED:-24576} * 1024) / 2048 ))
+
+  # Set nr_hugepage
+  (( VALUE > 0 )) \
+    && sudo bash -c "echo ${VALUE} > /proc/sys/vm/nr_hugepages"
+
+  # Set memory config on command line
+  INSTALL_FLAG+=" --memory ${VM_MEM:-4096},hugepages=yes"
+  INSTALL_FLAG+=" --memorybacking hugepages=yes,size=2,unit=M,locked=yes"
+else
+  # Set memory config on command line
+  INSTALL_FLAG+=" --memory ${VM_MEM:-4096}"
+  INSTALL_FLAG+=" --memorybacking access.mode=shared,source.type=memfd,allocation.mode=immediate"
+fi
+
+# Don't configure TPM if software emulation (EMULATE_TPM=true) is used
+[[ ${EMULATE_TPM} != "true" ]] \
+  && EMULATED_TPM="emulator,model=tpm-crb,version=2.0"
+
+# Create directories: dedicated one for storage pool + logs one
+mkdir -p logs ${VM_NAME}
+
+# iPXE stuff will not be used if ISO is set
+if [[ ${BOOT_TYPE} == "iso" ]]; then
+  ISO=$(realpath elemental-*.iso 2>/dev/null)
+
+  # Exit if ISO is not available
+  [[ ! -f ${ISO} ]] \
+    && error "File ${ISO} not found! Exiting!"
+
+  # Soft-link the ISO to avoid "Could not define storage pool" error
+  ln -s ${ISO} ${VM_NAME}/
+
+  # Force ISO boot
+  INSTALL_FLAG+=" --cdrom ${VM_NAME}/${ISO##*/} --noreboot"
+  
+  # Use noautoconsole to check SeedImage cloud-config
+  # because we need to ssh into the VM when it is installing
+  [[ ${POOL} == "master" ]] && INSTALL_FLAG+=" --noautoconsole"
+elif [[ ${BOOT_TYPE} == "raw" ]]; then
+  RAW_IMAGE=$(realpath elemental-*.raw 2>/dev/null)
+
+  # Exit if RAW is not available
+  [[ ! -f ${RAW_IMAGE} ]] \
+    && error "File ${RAW_IMAGE} not found! Exiting!"
+  
+  # Duplicate the raw image depending on nodes number
+  cp ${RAW_IMAGE} ${VM_NAME}/${VM_NAME}.img
+
+  # We need to resize the raw image according to the HDD_SIZE
+  /usr/bin/qemu-img resize ${VM_NAME}/${VM_NAME}.img ${HDD_SIZE}G
+
+  INSTALL_FLAG+=" --noautoconsole"
+else
+  # Create symlink for binary but only if it doesn't exist
+  SYM_LINK=../../ipxe.efi
+  if [[ ! -h ${SYM_LINK} ]]; then
+    # Exit if binary is not available
+    IPXE_BIN=$(realpath assets/ipxe-${ARCH}.efi)
+    [[ ! -f ${IPXE_BIN} ]] \
+      && error "File ${IPXE_BIN} not found! Exiting!"
+
+    # Force remove, to avoid issue with 'ln'
+    # Only useful if an EFI file exists and it's not a symlink
+    rm -f ${SYM_LINK}
+    ln -s ${IPXE_BIN} ${SYM_LINK}
+  fi
+
+  # Force PXE boot and add noreboot flag (cannot be used with raw image)
+  INSTALL_FLAG+=" --pxe --noreboot"
+fi
+
+# Disk performance tuning
+DISK_TUNE="bus=scsi,driver.cache=none,driver.io=native,driver.discard=ignore"
+
+# VM variables
+LOG_FILE=logs/bootstrap_${VM_NAME}.log
+CMD="sudo virt-install \
+       --name ${VM_NAME} \
+       --os-variant opensuse-unknown \
+       --virt-type kvm \
+       --machine q35 \
+       --boot loader=${FW_CODE},loader.readonly=yes,loader.secure=yes,loader.type=pflash,nvram.template=${FW_VARS} \
+       --features smm.state=yes \
+       --vcpus ${VM_CPU:-4} \
+       --cpu host \
+       --disk path=${VM_NAME}/${VM_NAME}.img,size=${HDD_SIZE},${DISK_TUNE} \
+       --disk path=${VM_NAME}/${VM_NAME}-data.img,size=${HDD_SIZE},${DISK_TUNE} \
+       --check disk_size=off \
+       --graphics none \
+       --serial pty \
+       --console pty,target_type=virtio \
+       --rng random \
+       --tpm ${EMULATED_TPM} \
+       --network network=default,bridge=virbr0,model=virtio,mac=${MAC} \
+       ${INSTALL_FLAG}"
+
+# Create VM
+# But before, sync all and wait a little bit before executing virt-install
+# To try to avoid sporadic issue where sometimes the media is not found by virt-install
+sync \
+  && sleep 5s \
+  && script -E never -e -f -q -O ${LOG_FILE} -c "${CMD}"
+# && script -E never -e -f -q -O ${LOG_FILE} -c "${CMD}" >/dev/null 2>&1

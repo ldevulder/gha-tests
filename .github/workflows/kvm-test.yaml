@@ -3,7 +3,9 @@ name: kvm-test
 on: workflow_dispatch
 
 jobs:
-  non-privileged-container:
+  run-vm:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Check KVM state on non-privileged container
@@ -20,23 +22,34 @@ jobs:
           lsmem
           echo -e "\n** DISK **"
           lsblk
-  privileged-container:
-    runs-on: ubuntu-latest
-    container:
-      image: ubuntu:latest
-      options: --privileged
-    steps:
-      - name: Check KVM state on privileged container
+
+      - name: Dependencies installation and configuration
         run: |
-          echo "** KVM **"
-          ls -l /dev/kvm
-          for mod in amd intel; do
-            echo -n "${mod}: "
-            cat /sys/module/kvm_${mod}/parameters/nested 2>/dev/null || echo 0
-          done
-          echo -e "\n** CPU **"
-          lscpu
-          echo -e "\n** MEM **"
-          lsmem
-          echo -e "\n** DISK **"
-          lsblk
+          # Install QEMU packages
+          sudo apt update
+          sudo apt install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager
+
+          # Configure udev
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy VM
+        env:
+          VM: node-001
+          MAC: 00:11:22:33:44:55
+        run: |
+          # Set permissions for libvirt
+          sudo setfacl -m u:libvirt-qemu:rx /home/runner
+
+          mkdir -p ${VM}
+
+          # Create virtual HDDs
+          qemu-img create -f qcow2 ${VM}/${VM}.img 30G
+          qemu-img create -f qcow2 ${VM}/${VM}-data.img 100G
+
+          # Execute installation/start script
+          scripts/install-vm ${VM} ${MAC}

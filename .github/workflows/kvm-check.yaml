@@ -1,0 +1,42 @@
+name: kvm-check
+
+on: workflow_dispatch
+
+jobs:
+  non-privileged-container:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check KVM state on non-privileged container
+        run: |
+          echo "** KVM **"
+          ls -l /dev/kvm
+          for mod in amd intel; do
+            echo -n "${mod}: "
+            cat /sys/module/kvm_${mod}/parameters/nested 2>/dev/null || echo 0
+          done
+          echo -e "\n** CPU **"
+          lscpu
+          echo -e "\n** MEM **"
+          lsmem
+          echo -e "\n** DISK **"
+          lsblk
+  privileged-container:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:latest
+      options: --privileged
+    steps:
+      - name: Check KVM state on privileged container
+        run: |
+          echo "** KVM **"
+          ls -l /dev/kvm
+          for mod in amd intel; do
+            echo -n "${mod}: "
+            cat /sys/module/kvm_${mod}/parameters/nested 2>/dev/null || echo 0
+          done
+          echo -e "\n** CPU **"
+          lscpu
+          echo -e "\n** MEM **"
+          lsmem
+          echo -e "\n** DISK **"
+          lsblk
